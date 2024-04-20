@@ -67,6 +67,6 @@ func (s *Storage) CreateProject(p *Project) (*Project, error) {
 
 func (s *Storage) GetProject(id string) (*Project, error) {
 	var p Project
-	err := s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&t.ID, &t.Name, &t.createdAt)
+	err := s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&p.ID, &p.Name, &p.createdAt)
 	return &p, err
 }

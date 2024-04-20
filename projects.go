@@ -58,7 +58,12 @@ func (s *ProjectsService) handleGetProject(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	t, err := s.store.GetProject
+	t, err := s.store.GetProject(id)
+	if err != nil {
+		WriteJson(w, http.StatusBadRequest, ErrorResponse{Error: "project not found"})
+		return
+	}
+	WriteJson(w, http.StatusOK, t)
 }
 
 func validateProjectPayload(project *Project) error {
