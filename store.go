@@ -10,6 +10,7 @@ type Store interface {
 	GetTask(id string) (*Task, error)
 	// Projects
 	CreateProject(p *Project) (*Project, error)
+	GetProject(id string) (*Project, error)
 }
 
 type Storage struct {
@@ -62,4 +63,10 @@ func (s *Storage) CreateProject(p *Project) (*Project, error) {
 
 	p.ID = id
 	return p, nil
+}
+
+func (s *Storage) GetProject(id string) (*Project, error) {
+	var p Project
+	err := s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&t.ID, &t.Name, &t.createdAt)
+	return &p, err
 }
