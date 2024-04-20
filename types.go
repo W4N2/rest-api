@@ -10,3 +10,9 @@ type Task struct {
 	assignedTo int64     `json:"assignedTo"`
 	createdAt  time.Time `json:"createdAt"`
 }
+
+type Project struct {
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	createdAt time.Time `json:"createdAt"`
+}
