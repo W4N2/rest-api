@@ -9,9 +9,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var errNameRequired = errors.New("Name is required")
-var errProjectIDRequired = errors.New("Project ID is required")
-var errUserIDRequired = errors.New("User ID is required")
+var errNameRequired = errors.New("name is required")
+var errProjectIDRequired = errors.New("project ID is required")
+var errUserIDRequired = errors.New("user ID is required")
 
 type TasksService struct {
 	store Store
@@ -29,7 +29,7 @@ func (s *TasksService) RegisterRoutes(r *mux.Router) {
 func (s *TasksService) handleCreateTask(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "Invalid Request Payload"})
+		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "invalid Request payload"})
 		return
 	}
 
@@ -38,7 +38,7 @@ func (s *TasksService) handleCreateTask(w http.ResponseWriter, r *http.Request) 
 	var task *Task
 	err = json.Unmarshal(body, &task)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "Invalid Request Payload"})
+		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "invalid Request payload"})
 		return
 	}
 
@@ -49,7 +49,7 @@ func (s *TasksService) handleCreateTask(w http.ResponseWriter, r *http.Request) 
 
 	t, err := s.store.CreateTask(task)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "Error creating task"})
+		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "error creating task"})
 		return
 	}
 
@@ -57,7 +57,16 @@ func (s *TasksService) handleCreateTask(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *TasksService) handleGetTask(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 
+	t, err := s.store.GetTask(id)
+	if err != nil {
+		WriteJson(w, http.StatusBadRequest, ErrorResponse{Error: "task not found"})
+		return
+	}
+
+	WriteJson(w, http.StatusOK, t)
 }
 
 func validateTaskPayload(task *Task) error {
