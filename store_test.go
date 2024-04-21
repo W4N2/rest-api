@@ -23,3 +23,7 @@ func (m *MockStore) CreateProject(p *Project) (*Project, error) {
 func (m *MockStore) GetProject(id string) (*Project, error) {
 	return &Project{}, nil
 }
+
+func (m *MockStore) GetUserByID(id string) (*User, error) {
+	return &User{}, nil
+}

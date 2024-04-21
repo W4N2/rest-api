@@ -20,8 +20,9 @@ func NewProjectsService(s Store) *ProjectsService {
 }
 
 func (s *ProjectsService) RegisterRoutes(r *mux.Router) {
-	r.HandleFunc("/projects", s.handleCreateProject).Methods("POST")
-	r.HandleFunc("/projects/{id}", s.handleGetProject).Methods("GET")
+	r.HandleFunc("/projects", WithJWTAuth(s.handleCreateProject, s.store)).Methods("POST")
+	r.HandleFunc("/projects/{id}", WithJWTAuth(s.handleGetProject, s.store)).Methods("GET")
+
 }
 
 func (s *ProjectsService) handleCreateProject(w http.ResponseWriter, r *http.Request) {
