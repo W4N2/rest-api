@@ -1,3 +1,5 @@
+[![Go Test](https://github.com/W4N2/rest-api/actions/workflows/go-test.yml/badge.svg)](https://github.com/W4N2/rest-api/actions/workflows/go-test.yml)
+
 # Go and MySQL REST API for Project Management
 
 This project provides a RESTful API for managing projects, users, and tasks. It's inspired by Jira and allows you to create, update, and retrieve project-related data.
