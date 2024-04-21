@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/w4n2/rest-api/src/internal/storage"
+
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -24,8 +26,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	store := NewStore(db)
-	api := NewAPIServer(":3000", store)
+	store := storage.NewStore(db)
+	api := storage.NewAPIServer(":3000", store)
 
 	api.Serve()
 }
