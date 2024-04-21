@@ -133,21 +133,31 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
 sequenceDiagram
   participant Client
   participant API
+  participant Authentication
   participant Database
 
   Client ->> API: POST /projects
+  API ->> Authentication: Authenticate (JWT)
+  Authentication -->> API: Authentication Successful
   API ->> Database: Insert Project
-  API -->> Client: Project Created
+  Database -->> Client: Project Created
 
   Client ->> API: GET /projects
+  API ->> Authentication: Authenticate (JWT)
+  Authentication -->> API: Authentication Successful
   API ->> Database: Retrieve Projects
-  API -->> Client: List of Projects
+  Database -->> Client: List of Projects
 
   Client ->> API: POST /tasks
+  API ->> Authentication: Authenticate (JWT)
+  Authentication -->> API: Authentication Successful
   API ->> Database: Insert Task
-  API -->> Client: Task Created
+  Database -->> Client: Task Created
 
   Client ->> API: GET /tasks
+  API ->> Authentication: Authenticate (JWT)
+  Authentication -->> API: Authentication Successful
   API ->> Database: Retrieve Tasks
-  API -->> Client: List of Tasks
+  Database -->> Client: List of Tasks
+
 ```
