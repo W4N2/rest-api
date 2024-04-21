@@ -47,7 +47,7 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
     ```
 
 - **Get All Projects:**
-  - **URL:** `GET /projects`
+  - **URL:** `GET /projects/1`
   - **Response:**
     ```json
     [
@@ -114,21 +114,19 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
     }
     ```
 
-- **Get All Tasks for a Project:**
-  - **URL:** `GET /tasks?projectId=1`
+- **Get a Task:**
+  - **URL:** `GET /tasks/1`
   - **Response:**
     ```json
-    [
       {
         "id": 1,
         "projectId": 1,
-        "title": "Implement feature X",
+        "name": "Implement feature X",
         "assigneeId": 1
       }
-    ]
     ```
 
-## Mermaid Diagram
+## Sequence Diagram
 
 ```mermaid
 
