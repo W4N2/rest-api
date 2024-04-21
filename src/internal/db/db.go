@@ -47,6 +47,7 @@ func (s *MySQLStorage) createProjectsTable() error {
 		CREATE TABLE IF NOT EXISTS projects (
 			id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 			name VARCHAR(255) NOT NULL,
+			description TEXT NOT NULL,
 			createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 			PRIMARY KEY (id)) 

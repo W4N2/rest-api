@@ -44,7 +44,8 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
     {
       "id": 1,
       "name": "My Project",
-      "description": "A sample project"
+      "description": "A sample project",
+      "createdAt": "2023-01-01T00:00:00"
     }
     ```
 
@@ -56,7 +57,8 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
       {
         "id": 1,
         "name": "My Project",
-        "description": "A sample project"
+        "description": "A sample project",
+        "createdAt": "2023-01-01T00:00:00"
       }
     ]
     ```
@@ -68,16 +70,20 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
   - **Request Body:**
     ```json
     {
-      "username": "john_doe",
-      "email": "john@example.com"
+      "email": "john@example.com",
+      "firstName": "John",
+      "lastName": "Example",
+      "password": "password"
     }
     ```
   - **Response:**
     ```json
     {
       "id": 1,
-      "username": "john_doe",
-      "email": "john@example.com"
+      "email": "john@example.com",
+      "firstName": "John",
+      "lastName": "Example",
+      "createdAt": "2023-01-01T00:00:00"
     }
     ```
 
@@ -88,8 +94,10 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
     [
       {
         "id": 1,
-        "username": "john_doe",
-        "email": "john@example.com"
+        "email": "john@example.com",
+        "firstName": "John",
+        "lastName": "Example",
+        "createdAt": "2023-01-01T00:00:00"
       }
     ]
     ```
@@ -111,8 +119,9 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
     {
       "id": 1,
       "projectId": 1,
-      "title": "Implement feature X",
-      "assigneeId": 1
+      "name": "Implement feature X",
+      "assigneeId": 1,
+      "createdAt": "2023-01-01T00:00:00"
     }
     ```
 
@@ -124,7 +133,8 @@ This project provides a RESTful API for managing projects, users, and tasks. It'
         "id": 1,
         "projectId": 1,
         "name": "Implement feature X",
-        "assigneeId": 1
+        "assigneeId": 1,
+        "createdAt": "2023-01-01T00:00:00"
       }
     ```
 

@@ -51,7 +51,7 @@ func (s *Storage) GetTask(id string) (*types.Task, error) {
 }
 
 func (s *Storage) CreateProject(p *types.Project) (*types.Project, error) {
-	rows, err := s.db.Exec("INSERT INTO projects (name) VALUES (?)", p.Name)
+	rows, err := s.db.Exec("INSERT INTO projects (name, description) VALUES (?, ?)", p.Name, p.Description)
 
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (s *Storage) CreateProject(p *types.Project) (*types.Project, error) {
 
 func (s *Storage) GetProject(id string) (*types.Project, error) {
 	var p types.Project
-	err := s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&p.ID, &p.Name, &p.CreatedAt)
+	err := s.db.QueryRow("SELECT id, name, description, createdAt FROM projects WHERE id = ?", id).Scan(&p.ID, &p.Name, &p.Description, &p.CreatedAt)
 	return &p, err
 }
 
