@@ -136,6 +136,17 @@ sequenceDiagram
   participant Authentication
   participant Database
 
+  Client ->> API: POST /user/register
+  API ->> Database: Insert User
+  Database -->> API: User Created
+  Authentication -->> Client: Token Generated
+
+  Client ->> API: GET /user
+  API ->> Authentication: Get User
+  Authentication ->> Database: Validate User
+  Database ->> Authentication:User Validated
+  Authentication -->> Client: Token Generated
+
   Client ->> API: POST /projects
   API ->> Authentication: Authenticate (JWT)
   Authentication -->> API: Authentication Successful
