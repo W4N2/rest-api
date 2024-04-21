@@ -1,4 +1,4 @@
-package main
+package projects
 
 import (
 	"encoding/json"
@@ -7,51 +7,55 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/w4n2/rest-api/src/auth"
+	"github.com/w4n2/rest-api/src/internal/types"
+	"github.com/w4n2/rest-api/src/internal/utils"
+	"github.com/w4n2/rest-api/src/store"
 )
 
 var errProjectNameRequired = errors.New("project name is required")
 
 type ProjectsService struct {
-	store Store
+	store store.Store
 }
 
-func NewProjectsService(s Store) *ProjectsService {
+func NewProjectsService(s store.Store) *ProjectsService {
 	return &ProjectsService{store: s}
 }
 
 func (s *ProjectsService) RegisterRoutes(r *mux.Router) {
-	r.HandleFunc("/projects", WithJWTAuth(s.handleCreateProject, s.store)).Methods("POST")
-	r.HandleFunc("/projects/{id}", WithJWTAuth(s.handleGetProject, s.store)).Methods("GET")
+	r.HandleFunc("/projects", auth.WithJWTAuth(s.handleCreateProject, s.store)).Methods("POST")
+	r.HandleFunc("/projects/{id}", auth.WithJWTAuth(s.handleGetProject, s.store)).Methods("GET")
 
 }
 
 func (s *ProjectsService) handleCreateProject(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "invalid Request payload"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "invalid Request payload"})
 		return
 	}
 
 	defer r.Body.Close()
 
-	var project *Project
+	var project *types.Project
 	err = json.Unmarshal(body, &project)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "invalid Request payload"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "invalid Request payload"})
 		return
 	}
 
 	if err := validateProjectPayload(project); err != nil {
-		WriteJson(w, http.StatusBadRequest, ErrorResponse{Error: err.Error()})
+		utils.WriteJson(w, http.StatusBadRequest, utils.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	t, err := s.store.CreateProject(project)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "error creating project"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "error creating project"})
 	}
 
-	WriteJson(w, http.StatusCreated, t)
+	utils.WriteJson(w, http.StatusCreated, t)
 
 }
 
@@ -61,13 +65,13 @@ func (s *ProjectsService) handleGetProject(w http.ResponseWriter, r *http.Reques
 
 	t, err := s.store.GetProject(id)
 	if err != nil {
-		WriteJson(w, http.StatusBadRequest, ErrorResponse{Error: "project not found"})
+		utils.WriteJson(w, http.StatusBadRequest, utils.ErrorResponse{Error: "project not found"})
 		return
 	}
-	WriteJson(w, http.StatusOK, t)
+	utils.WriteJson(w, http.StatusOK, t)
 }
 
-func validateProjectPayload(project *Project) error {
+func validateProjectPayload(project *types.Project) error {
 	if project.Name == "" {
 		return errProjectNameRequired
 	}

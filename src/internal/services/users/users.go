@@ -1,4 +1,4 @@
-package main
+package users
 
 import (
 	"encoding/json"
@@ -7,6 +7,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/w4n2/rest-api/src/auth"
+	"github.com/w4n2/rest-api/src/config"
+	"github.com/w4n2/rest-api/src/internal/types"
+	"github.com/w4n2/rest-api/src/internal/utils"
+	"github.com/w4n2/rest-api/src/store"
 )
 
 var errEmailRequired = errors.New("email is required")
@@ -14,10 +19,10 @@ var errUsersNameRequired = errors.New("fisrt name and last name are required")
 var errPasswordRequired = errors.New("password is required")
 
 type UserService struct {
-	store Store
+	store store.Store
 }
 
-func NewUserService(s Store) *UserService {
+func NewUserService(s store.Store) *UserService {
 	return &UserService{store: s}
 }
 
@@ -30,43 +35,43 @@ func (s *UserService) RegisterRoutes(r *mux.Router) {
 func (s *UserService) handleUserRegister(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "invalid Request payload"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "invalid Request payload"})
 		return
 	}
 
 	defer r.Body.Close()
 
-	var user *User
+	var user *types.User
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "invalid Request payload"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "invalid Request payload"})
 		return
 	}
 
 	if err := validateUserPayload(user); err != nil {
-		WriteJson(w, http.StatusBadRequest, ErrorResponse{Error: err.Error()})
+		utils.WriteJson(w, http.StatusBadRequest, utils.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	hashedPassword := HashPassword(user.Password)
+	hashedPassword := auth.HashPassword(user.Password)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "error creating user"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "error creating user"})
 		return
 	}
 	user.Password = hashedPassword
 
 	u, err := s.store.CreateUser(user)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "error creating user"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "error creating user"})
 		return
 	}
 
 	token, err := createAndSetAuthCookie(u.ID, w)
 	if err != nil {
-		WriteJson(w, http.StatusInternalServerError, ErrorResponse{Error: "error creating user sesion"})
+		utils.WriteJson(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "error creating user sesion"})
 		return
 	}
-	WriteJson(w, http.StatusCreated, token)
+	utils.WriteJson(w, http.StatusCreated, token)
 }
 
 func (s *UserService) handleGetUser(w http.ResponseWriter, r *http.Request) {
@@ -76,13 +81,13 @@ func (s *UserService) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	t, err := s.store.GetUserByID(id)
 	if err != nil {
 		// Return generic response
-		WriteJson(w, http.StatusBadRequest, ErrorResponse{Error: "invalid request payload"})
+		utils.WriteJson(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
-	WriteJson(w, http.StatusOK, t)
+	utils.WriteJson(w, http.StatusOK, t)
 }
 
-func validateUserPayload(user *User) error {
+func validateUserPayload(user *types.User) error {
 	if user.Email == "" {
 		return errEmailRequired
 	}
@@ -99,8 +104,8 @@ func validateUserPayload(user *User) error {
 }
 
 func createAndSetAuthCookie(id int64, w http.ResponseWriter) (string, error) {
-	secret := []byte(Envs.JWTSecret)
-	token, err := CreateJWT(secret, id)
+	secret := []byte(config.Envs.JWTSecret)
+	token, err := auth.CreateJWT(secret, id)
 	if err != nil {
 		return "", err
 	}

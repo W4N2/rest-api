@@ -1,4 +1,4 @@
-package main
+package tasks
 
 import (
 	"bytes"
@@ -8,14 +8,16 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
+	"github.com/w4n2/rest-api/src/internal/types"
+	"github.com/w4n2/rest-api/src/store"
 )
 
 func TestCreateTask(t *testing.T) {
-	ms := &MockStore{}
+	ms := &store.MockStore{}
 	service := NewTasksService(ms)
 
 	t.Run("should return an error if name is empty", func(t *testing.T) {
-		payload := Task{
+		payload := types.Task{
 			Name: "",
 		}
 		b, err := json.Marshal(payload)
@@ -43,7 +45,7 @@ func TestCreateTask(t *testing.T) {
 }
 
 func TestGetTask(t *testing.T) {
-	ms := &MockStore{}
+	ms := &store.MockStore{}
 	service := NewTasksService(ms)
 
 	t.Run("should return the task", func(t *testing.T) {

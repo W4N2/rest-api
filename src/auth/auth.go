@@ -1,4 +1,4 @@
-package main
+package auth
 
 import (
 	"fmt"
@@ -8,12 +8,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/w4n2/rest-api/src/config"
+	"github.com/w4n2/rest-api/src/internal/utils"
+	"github.com/w4n2/rest-api/src/store"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Higher order func for request auth
 
-func WithJWTAuth(handlerFunc http.HandlerFunc, store Store) http.HandlerFunc {
+func WithJWTAuth(handlerFunc http.HandlerFunc, store store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// get the token from the request
 		tokenString := GetTokenFromRequest(r)
@@ -21,13 +24,13 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store Store) http.HandlerFunc {
 		token, err := validateJWT(tokenString)
 		if err != nil {
 			log.Printf("failed to authenticate token")
-			WriteJson(w, http.StatusUnauthorized, ErrorResponse{Error: fmt.Errorf("permissioned denied").Error()})
+			utils.WriteJson(w, http.StatusUnauthorized, utils.ErrorResponse{Error: fmt.Errorf("permissioned denied").Error()})
 			return
 		}
 
 		if !token.Valid {
 			log.Printf("failed to authenticate token")
-			WriteJson(w, http.StatusUnauthorized, ErrorResponse{Error: fmt.Errorf("permissioned denied").Error()})
+			utils.WriteJson(w, http.StatusUnauthorized, utils.ErrorResponse{Error: fmt.Errorf("permissioned denied").Error()})
 			return
 		}
 		// get the userID from the token
@@ -37,7 +40,7 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store Store) http.HandlerFunc {
 		_, err = store.GetUserByID(userID)
 		if err != nil {
 			log.Printf("failed to get user")
-			WriteJson(w, http.StatusUnauthorized, ErrorResponse{Error: fmt.Errorf("permissioned denied").Error()})
+			utils.WriteJson(w, http.StatusUnauthorized, utils.ErrorResponse{Error: fmt.Errorf("permissioned denied").Error()})
 			return
 		}
 		// call the handler func and continue to endpont
@@ -61,7 +64,7 @@ func GetTokenFromRequest(r *http.Request) string {
 }
 
 func validateJWT(t string) (*jwt.Token, error) {
-	secret := Envs.JWTSecret
+	secret := config.Envs.JWTSecret
 	return jwt.Parse(t, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])

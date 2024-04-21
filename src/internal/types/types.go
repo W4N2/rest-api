@@ -1,4 +1,4 @@
-package main
+package types
 
 import "time"
 
@@ -7,14 +7,14 @@ type Task struct {
 	Name       string    `json:"name"`
 	Status     string    `json:"status"`
 	ProjectID  int64     `json:"projectID"`
-	assignedTo int64     `json:"assignedTo"`
-	createdAt  time.Time `json:"createdAt"`
+	AssignedTo int64     `json:"assignedTo"`
+	CreatedAt  time.Time `json:"createdAt"`
 }
 
 type Project struct {
 	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
-	createdAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type User struct {
@@ -23,5 +23,5 @@ type User struct {
 	FirstName string    `json:"firstName"`
 	LastName  string    `json:"lastName"`
 	Password  string    `json:"password"`
-	createdAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt"`
 }
