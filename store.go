@@ -4,7 +4,7 @@ import "database/sql"
 
 type Store interface {
 	// Users
-	CreateUser() error
+	CreateUser(u *User) (*User, error)
 	GetUserByID(id string) (*User, error)
 	// Tasks
 	CreateTask(t *Task) (*Task, error)
@@ -22,10 +22,6 @@ func NewStore(db *sql.DB) *Storage {
 	return &Storage{
 		db: db,
 	}
-}
-
-func (s *Storage) CreateUser() error {
-	return nil
 }
 
 func (s *Storage) CreateTask(t *Task) (*Task, error) {
@@ -70,6 +66,22 @@ func (s *Storage) GetProject(id string) (*Project, error) {
 	var p Project
 	err := s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&p.ID, &p.Name, &p.createdAt)
 	return &p, err
+}
+
+func (s *Storage) CreateUser(u *User) (*User, error) {
+	rows, err := s.db.Exec("INSERT INTO users (email, firstName, lastName, password) VALUES (?,?,?,?)", u.Email, u.FirstName, u.LastName, u.Password)
+
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := rows.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	u.ID = id
+	return u, nil
 }
 
 func (s *Storage) GetUserByID(id string) (*User, error) {

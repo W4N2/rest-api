@@ -13,6 +13,7 @@ type MySQLStorage struct {
 
 func NewMySQLStorage(cfg mysql.Config) *MySQLStorage {
 	db, err := sql.Open("mysql", cfg.FormatDSN())
+	//db, err := sql.Open("mysql", "user:password@tcp(db:3306)/testdb")
 	if err != nil {
 		log.Fatal(err)
 	}

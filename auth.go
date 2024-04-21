@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Higher order func for request auth
@@ -67,4 +70,26 @@ func validateJWT(t string) (*jwt.Token, error) {
 		return []byte(secret), nil
 	})
 
+}
+
+func HashPassword(password string) string {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return ""
+	}
+
+	return string(hash)
+}
+
+func CreateJWT(secret []byte, userID int64) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userID":    strconv.Itoa(int(userID)),
+		"expiresAt": time.Now().Add(time.Hour * 24 * 120).Unix(),
+	})
+
+	tokenString, err := token.SignedString(secret)
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
 }
