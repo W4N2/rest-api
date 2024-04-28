@@ -4,9 +4,9 @@ FROM golang:1.22.2 AS build-stage
     COPY go.mod go.sum ./
     RUN go mod download
 
-    COPY *.go ./src/...
+    COPY ./src ./src
 
-    RUN CGO_ENABLED=0 GOOS=linux go build -o /api
+    RUN CGO_ENABLED=0 GOOS=linux go build -o /api ./src/
 
 FROM build-stage AS run-test-stage
     RUN go test -v ./...
