@@ -1,10 +1,15 @@
-name: Docker Image CI
+name: Docker Build and Push
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
+env:
+  DOCKER_IMAGE_NAME: rest-api
+  DOCKER_IMAGE_VERSION: $(date +%s)
+
 
 jobs:
 
@@ -15,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag rest-api:$(date +%s)
+      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME}}:${{ env.DOCKER_IMAGE_VERSION }}
 
   push:
   
@@ -31,5 +36,5 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push the Docker image
-        run: docker tag rest-api:$(date +%s) ${{ secrets.DOCKER_USERNAME }}/rest-api:$(date +%s)
-      - run: docker push ${{ secrets.DOCKER_USERNAME }}/rest-api:$(date +%s)
+        run: docker tag rest-api:$(date +%s) ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME}}:${{ env.DOCKER_IMAGE_VERSION }}
+      - run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME}}:${{ env.DOCKER_IMAGE_VERSION }}
