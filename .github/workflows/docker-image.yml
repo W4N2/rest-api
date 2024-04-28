@@ -6,35 +6,22 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  DOCKER_IMAGE_NAME: rest-api
-  DOCKER_IMAGE_VERSION: $(date +%s)
-
-
 jobs:
 
-  build:
-
-    runs-on: ubuntu-latest
-
+  build-and-push:
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME}}:${{ env.DOCKER_IMAGE_VERSION }}
+      - name: Check out the repo
+        uses: actions/checkout@v4
 
-  push:
-  
-      needs: build
-  
-      runs-on: ubuntu-latest
-  
-      steps:
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push the Docker image
-        run: docker tag rest-api:$(date +%s) ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME}}:${{ env.DOCKER_IMAGE_VERSION }}
-      - run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME}}:${{ env.DOCKER_IMAGE_VERSION }}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: w4n2/rest-api:latest
+
